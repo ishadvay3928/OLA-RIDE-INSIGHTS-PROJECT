@@ -7,7 +7,7 @@ import plotly.express as px
 # --------------------
 # PAGE CONFIG
 # --------------------
-st.set_page_config(page_title="Ola Ride Dashboard", layout="wide")
+st.set_page_config(page_title="Ola Ride Insights App", layout="wide")
 
 # --------------------
 # DB CONNECTION
@@ -257,6 +257,7 @@ elif page == "📊 BI Dashboard View":
         st.subheader("Customer Ratings by Vehicle Type")
         fig8 = px.bar(df_ratings, x="Vehicle_Type", y="Customer_Avg", title="Customer Ratings")
         st.plotly_chart(fig8, use_container_width=True)
+
 
 
 
