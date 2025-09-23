@@ -57,40 +57,42 @@ if page == "🔎 SQL Queries View":
     st.header("🔎 SQL Queries")
 
     query_map = {
-        "1️⃣ Retrieve all successful bookings":
-            "SELECT * FROM ola_rides WHERE booking_status = 'Success';",
+    "1️⃣ Retrieve all successful bookings":
+        "SELECT * FROM ola_rides WHERE booking_status = 'Success';",
 
-        "2️⃣ Find the average ride distance for each vehicle type":
-            "SELECT vehicle_type, ROUND(AVG(ride_distance),2) AS avg_distance FROM ola_rides WHERE Booking_Status = 'Success' GROUP BY vehicle_type;",
+    "2️⃣ Find the average ride distance for each vehicle type":
+        "SELECT vehicle_type, ROUND(AVG(ride_distance),2) AS avg_distance "
+        "FROM ola_rides WHERE booking_status = 'Success' GROUP BY vehicle_type;",
 
-        "3️⃣ Get the total number of cancelled rides by customers":
-            "select count(*) from ola_rides where Booking_Status = 'Canceled by Customer';",
+    "3️⃣ Get the total number of cancelled rides by customers":
+        "SELECT COUNT(*) FROM ola_rides WHERE booking_status = 'Canceled by Customer';",
 
-        "4️⃣ List the top 5 customers who booked the highest number of rides":
-               """select Customer_ID, count(Booking_ID) as Total_Rides 
-                  from ola_rides
-                  group by Customer_ID
-                  Order By Total_Rides Desc limit 5;""",
+    "4️⃣ List the top 5 customers who booked the highest number of rides":
+        """SELECT customer_id, COUNT(booking_id) AS total_rides 
+           FROM ola_rides
+           GROUP BY customer_id
+           ORDER BY total_rides DESC LIMIT 5;""",
 
-        "5️⃣ Get the number of rides cancelled by drivers due to personal and car-related issues":
-            "select count(*) from ola_rides where canceled_rides_by_driver = 'Personal & Car related issue';""",
+    "5️⃣ Get the number of rides cancelled by drivers due to personal and car-related issues":
+        "SELECT COUNT(*) FROM ola_rides WHERE canceled_rides_by_driver = 'Personal & Car related issue';",
 
-        "6️⃣ Find the maximum and minimum driver ratings for Prime Sedan bookings":
-            "select max(Driver_Ratings) as Maximum_rating, MIN(driver_ratings) AS min_rating from ola_rides where Vehicle_Type = 'Prime Sedan';",
-            
-        "7️⃣ Retrieve all rides where payment was made using UPI":   
-            "select * from ola_rides where Payment_Method = 'UPI';",
+    "6️⃣ Find the maximum and minimum driver ratings for Prime Sedan bookings":
+        "SELECT MAX(driver_ratings) AS maximum_rating, MIN(driver_ratings) AS min_rating "
+        "FROM ola_rides WHERE vehicle_type = 'Prime Sedan';",
+        
+    "7️⃣ Retrieve all rides where payment was made using UPI":   
+        "SELECT * FROM ola_rides WHERE payment_method = 'UPI';",
 
-        "8️⃣ Find the average customer rating per vehicle type":
-            "select Vehicle_Type, avg(customer_Rating) as avg_customer_rating from ola_rides group by Vehicle_Type;",
+    "8️⃣ Find the average customer rating per vehicle type":
+        "SELECT vehicle_type, AVG(customer_rating) AS avg_customer_rating "
+        "FROM ola_rides GROUP BY vehicle_type;",
 
-        "9️⃣ Calculate the total booking value of rides completed successfully":
-            "select sum(Booking_Value) as total_sucessful_value from ola_rides where Booking_Status = 'Success';",
+    "9️⃣ Calculate the total booking value of rides completed successfully":
+        "SELECT SUM(booking_value) AS total_successful_value FROM ola_rides WHERE booking_status = 'Success';",
 
-        "🔟 List all incomplete rides along with the reason":
-            "select Incomplete_Rides,Incomplete_Rides_Reason from ola_rides where Incomplete_Rides = 'Yes';"
-    }
-
+    "🔟 List all incomplete rides along with the reason":
+        "SELECT incomplete_rides, incomplete_rides_reason FROM ola_rides WHERE incomplete_rides = 'Yes';"
+}
     chosen = st.selectbox("👉 Select a SQL Query", list(query_map.keys()))
     df = q(query_map[chosen])
     st.dataframe(df, use_container_width=True)
