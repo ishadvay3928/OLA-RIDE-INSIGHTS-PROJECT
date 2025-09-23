@@ -67,7 +67,7 @@ if page == "🔎 SQL Queries View":
             "SELECT vehicle_type, ROUND(AVG(ride_distance),2) AS avg_distance FROM ola_rides WHERE Booking_Status = 'Success' GROUP BY vehicle_type;",
 
         "3️⃣ Get the total number of cancelled rides by customers":
-            "select count(*) from ola_rides where lambda df: df[df["Booking_Status"] == "Canceled by Customer"].shape[0];",
+            "select count(*) from ola_rides where lambda df: df[df["Booking_Status"] == "Canceled by Customer"].shape[0],;",
 
         "4️⃣ List the top 5 customers who booked the highest number of rides":
                """select Customer_ID, count(Booking_ID) as Total_Rides 
@@ -259,3 +259,4 @@ elif page == "📊 BI Dashboard View":
         st.subheader("Customer Ratings by Vehicle Type")
         fig8 = px.bar(df_ratings, x="Vehicle_Type", y="Customer_Avg", title="Customer Ratings")
         st.plotly_chart(fig8, use_container_width=True)
+
