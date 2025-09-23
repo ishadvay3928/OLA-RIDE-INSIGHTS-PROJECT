@@ -36,6 +36,7 @@ def load_csv_if_empty(table_name, csv_file):
         count = 0
     if count == 0 and os.path.exists(csv_file):
         df = pd.read_csv(csv_file)
+        df.columns = [c.lower() for c in df.columns]
         df.to_sql(table_name, engine, if_exists="append", index=False)
         st.info(f"📥 Loaded {table_name} from {csv_file} ({len(df)} rows)")
 
@@ -258,5 +259,6 @@ elif page == "📊 BI Dashboard View":
         st.subheader("Customer Ratings by Vehicle Type")
         fig8 = px.bar(df_ratings, x="Vehicle_Type", y="Customer_Avg", title="Customer Ratings")
         st.plotly_chart(fig8, use_container_width=True)
+
 
 
