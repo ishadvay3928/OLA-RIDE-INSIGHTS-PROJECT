@@ -29,21 +29,17 @@ def exec_write(sql, params=None):
 # --------------------
 # LOAD CSV IF EMPTY
 # --------------------
-def load_csv_if_empty(table_name, csv_file):
-    try:
-        count = q(f"SELECT COUNT(*) AS cnt FROM {table_name}")["cnt"][0]
-    except Exception:
-        count = 0
-    if count == 0 and os.path.exists(csv_file):
+def load_csv_to_db(table_name, csv_file):
+    if os.path.exists(csv_file):
         df = pd.read_csv(csv_file)
-        df.columns = [c.lower() for c in df.columns]
-        df.to_sql(table_name, engine, if_exists="append", index=False)
-        st.info(f"📥 Loaded {table_name} from {csv_file} ({len(df)} rows)")
+        df.columns = [c.lower() for c in df.columns]  # normalize column names
+        df.to_sql(table_name, engine, if_exists="replace", index=False)
+        st.info(f"📥 Reloaded {table_name} from {csv_file} ({len(df)} rows)")
 
-# Example (replace with your Ola dataset CSV)
+# Always reload CSV into DB so counts are consistent
 csv_files = {"ola_rides": "ola_clean_dataset.csv"}
 for table, file in csv_files.items():
-    load_csv_if_empty(table, file)
+    load_csv_to_db(table, file)
 
 # --------------------
 # SIDEBAR NAVIGATION
@@ -57,41 +53,42 @@ page = st.sidebar.radio("Navigation", ["🔎 SQL Queries View", "📊 BI Dashboa
 if page == "🔎 SQL Queries View":
     st.header("🔎 SQL Queries")
 
-    df = pd.read_csv("ola_clean_dataset.csv")
-
     query_map = {
         "1️⃣ Retrieve all successful bookings":
             "SELECT * FROM ola_rides WHERE booking_status = 'Success';",
 
         "2️⃣ Find the average ride distance for each vehicle type":
-            "SELECT vehicle_type, ROUND(AVG(ride_distance),2) AS avg_distance FROM ola_rides WHERE Booking_Status = 'Success' GROUP BY vehicle_type;",
+            "SELECT vehicle_type, ROUND(AVG(ride_distance),2) AS avg_distance "
+            "FROM ola_rides WHERE booking_status = 'Success' GROUP BY vehicle_type;",
 
         "3️⃣ Get the total number of cancelled rides by customers":
-            "select count(*) from ola_rides where lambda df: df[df["Booking_Status"] == "Canceled by Customer"].shape[0],;",
+            "SELECT COUNT(*) AS total_cancelled_customers FROM ola_rides WHERE booking_status = 'Canceled by Customer';",
 
         "4️⃣ List the top 5 customers who booked the highest number of rides":
-               """select Customer_ID, count(Booking_ID) as Total_Rides 
-                  from ola_rides
-                  group by Customer_ID
-                  Order By Total_Rides Desc limit 5;""",
+            """SELECT customer_id, COUNT(booking_id) AS total_rides 
+               FROM ola_rides
+               GROUP BY customer_id
+               ORDER BY total_rides DESC LIMIT 5;""",
 
         "5️⃣ Get the number of rides cancelled by drivers due to personal and car-related issues":
-            "select count(*) from ola_rides where canceled_rides_by_driver = 'Personal & Car related issue';""",
+            "SELECT COUNT(*) AS driver_personal_cancel FROM ola_rides WHERE canceled_rides_by_driver = 'Personal & Car related issue';",
 
         "6️⃣ Find the maximum and minimum driver ratings for Prime Sedan bookings":
-            "select max(Driver_Ratings) as Maximum_rating, MIN(driver_ratings) AS min_rating from ola_rides where Vehicle_Type = 'Prime Sedan';",
-            
+            "SELECT MAX(driver_ratings) AS maximum_rating, MIN(driver_ratings) AS min_rating "
+            "FROM ola_rides WHERE vehicle_type = 'Prime Sedan';",
+        
         "7️⃣ Retrieve all rides where payment was made using UPI":   
-            "select * from ola_rides where Payment_Method = 'UPI';",
+            "SELECT * FROM ola_rides WHERE payment_method = 'UPI';",
 
         "8️⃣ Find the average customer rating per vehicle type":
-            "select Vehicle_Type, avg(customer_Rating) as avg_customer_rating from ola_rides group by Vehicle_Type;",
+            "SELECT vehicle_type, AVG(customer_rating) AS avg_customer_rating "
+            "FROM ola_rides GROUP BY vehicle_type;",
 
         "9️⃣ Calculate the total booking value of rides completed successfully":
-            "select sum(Booking_Value) as total_sucessful_value from ola_rides where Booking_Status = 'Success';",
+            "SELECT SUM(booking_value) AS total_successful_value FROM ola_rides WHERE booking_status = 'Success';",
 
         "🔟 List all incomplete rides along with the reason":
-            "select Incomplete_Rides,Incomplete_Rides_Reason from ola_rides where Incomplete_Rides = 'Yes';"
+            "SELECT incomplete_rides, incomplete_rides_reason FROM ola_rides WHERE incomplete_rides = 'Yes';"
     }
 
     chosen = st.selectbox("👉 Select a SQL Query", list(query_map.keys()))
@@ -259,4 +256,5 @@ elif page == "📊 BI Dashboard View":
         st.subheader("Customer Ratings by Vehicle Type")
         fig8 = px.bar(df_ratings, x="Vehicle_Type", y="Customer_Avg", title="Customer Ratings")
         st.plotly_chart(fig8, use_container_width=True)
+
 
