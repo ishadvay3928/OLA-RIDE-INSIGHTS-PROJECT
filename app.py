@@ -106,7 +106,8 @@ elif page == "📊 BI Dashboard View":
 
     section = st.selectbox("Choose Section", ["Overall", "Vehicle Type", "Revenue", "Cancellation", "Ratings"])
 
-    df = pd.read_csv("Ola_clean_dataset.csv")
+    df = pd.read_csv("ola_clean_dataset.csv")
+
     df["Date"] = pd.to_datetime(df["Date"])  # ensure datetime
 
     # ---------------- DATE FILTER ----------------
@@ -259,6 +260,7 @@ elif page == "📊 BI Dashboard View":
         st.subheader("Customer Ratings by Vehicle Type")
         fig8 = px.bar(df_ratings, x="Vehicle_Type", y="Customer_Avg", title="Customer Ratings")
         st.plotly_chart(fig8, use_container_width=True)
+
 
 
 
