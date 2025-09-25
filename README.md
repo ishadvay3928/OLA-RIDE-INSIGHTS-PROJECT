@@ -83,7 +83,7 @@ pip install -r requirements.txt
 4️⃣ Database setup
 
 * The app uses **SQLite (`ola_rides.db`)** by default.
-* If missing, place the processed dataset in `/data/` and recreate the DB using provided notebooks.
+* If missing, place the processed dataset in `Ola_clean_dataset.csv` and recreate the DB using provided notebooks.
 
 5️⃣ Run the app
 
