@@ -109,6 +109,7 @@ plotly
 ## 📬 Contact
 
 👩‍💻 **Isha Chaudhary**
+
 📧 [ishachaudhary3928@gmail.com](mailto:ishachaudhary3928@gmail.com)
 
 🔗 [LinkedIn](https://linkedin.com)
